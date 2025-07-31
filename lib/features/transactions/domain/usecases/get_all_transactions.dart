@@ -5,10 +5,11 @@ import 'package:simpletreasury/features/transactions/domain/repositories/transac
 
 class GetAllTransactionsUsecase {
   final TransactionsRepository repository;
+  final Transaction transaction;
 
-  GetAllTransactionsUsecase(this.repository);
+  GetAllTransactionsUsecase(this.repository, this.transaction);
 
   Future<Either<Failure, List<Transaction>>> call() async {
-    return await repository.getAllTransactions();
+    return await repository.getAllTransactions(transaction.treasuryId);
   }
 }

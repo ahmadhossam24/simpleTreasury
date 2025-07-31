@@ -1,0 +1,194 @@
+ok this treasury app i make in cleanarchiticiture but i want to ask in specific topic if i divide the project into features so i have transaction feature and this is enities file import 'package:equatable/equatable.dart';
+
+enum TransactionType { import, export }
+
+class Transaction extends Equatable {
+  final String id;
+  final String title;
+  final double value;
+  final DateTime date;
+  final TransactionType type;
+  final bool deleted;
+
+  const Transaction({
+    required this.id,
+    required this.title,
+    required this.value,
+    required this.date,
+    required this.type,
+    required this.deleted,
+  });
+
+  @override
+  List<Object?> get props => [id, title, value, date, type, deleted];
+} but i discovered that this transaction should affect only one treasury so we want to have multiple treasuries every treasury has its transactions so do i have to add new feature treasuries ? and what if i want to retrieve all treasuries and its transaction in a request, will this request will be treasuries feature or in transactions ? in clean arch its not clear where to deal with relations between features or entities  
+answer:
+You're asking a **very advanced and important question**—one that shows a solid grasp of **Clean Architecture** and its real-world trade-offs.
+
+Let’s break it down step by step, and I’ll give you a **clear rule of thumb** for handling **feature relationships** and **where cross-feature use cases belong**.
+
+---
+
+## 🔁 Your Current Situation
+
+You have:
+
+### ✅ A `Transaction` Entity:
+
+```dart
+class Transaction extends Equatable {
+  final String id;
+  final String title;
+  final double value;
+  final DateTime date;
+  final TransactionType type;
+  final bool deleted;
+}
+```
+
+And now you want to support:
+
+### ➕ Multiple **Treasuries**:
+
+* Each `Treasury` has many `Transaction`s
+* Each `Transaction` belongs to **one** `Treasury`
+
+So we are moving from a **flat transaction list** → to **hierarchical data**, i.e.:
+
+```
+Treasury A
+  ├─ Transaction A1
+  ├─ Transaction A2
+
+Treasury B
+  ├─ Transaction B1
+```
+
+---
+
+## ✅ You **Should Create a `Treasury` Feature**
+
+Yes, 100%.
+
+Your domain now has **two root aggregates**:
+
+* `Treasury` (parent aggregate)
+* `Transaction` (child of a treasury)
+
+That means:
+
+* `Treasury` deserves its own **feature module**
+* Transactions are subordinate to treasuries
+
+In Clean Architecture, **aggregates** and **bounded contexts** should be kept in their own feature folders when they are independently meaningful.
+
+---
+
+## 📦 Suggested Structure
+
+```text
+/lib
+  /features
+    /treasury
+      domain/
+        entities/
+          treasury.dart
+        repositories/
+          treasury_repository.dart
+        usecases/
+          get_all_treasuries.dart
+          add_treasury.dart
+          get_treasuries_with_transactions.dart  ← important
+      data/
+        models/
+        datasources/
+        repositories_impl/
+      presentation/
+        blocs/
+        pages/
+    /transaction
+      domain/
+        entities/
+          transaction.dart
+        usecases/
+          add_transaction.dart
+          delete_transaction.dart
+      ...
+```
+
+---
+
+## 🧠 Now to your Main Question:
+
+### ❓"If I want to retrieve **all treasuries with their transactions**, which feature owns that use case?"
+
+> ✅ **Answer:** It belongs to the **`treasury`** feature.
+
+Why? Because you're loading a **parent aggregate** and its children.
+
+> 🔁 Rule of thumb:
+> **Always place composite use cases under the feature of the parent/root aggregate.**
+
+So this use case would be:
+
+```dart
+class GetTreasuriesWithTransactions extends UseCase<List<TreasuryWithTransactions>, NoParams> { ... }
+```
+
+### 📄 You might have a model like:
+
+```dart
+class TreasuryWithTransactions {
+  final Treasury treasury;
+  final List<Transaction> transactions;
+
+  TreasuryWithTransactions({
+    required this.treasury,
+    required this.transactions,
+  });
+}
+```
+
+---
+
+## 👀 What if Transactions are accessed alone?
+
+You can still have:
+
+* `AddTransactionToTreasury`
+* `UpdateTransaction`
+* `DeleteTransaction`
+
+In the `transaction` feature, but all of them should be aware of which **treasuryId** they belong to.
+
+So your `Transaction` entity should be updated to:
+
+```dart
+class Transaction extends Equatable {
+  final String id;
+  final String treasuryId; // 🔥 Add this
+  final String title;
+  final double value;
+  final DateTime date;
+  final TransactionType type;
+  final bool deleted;
+
+  const Transaction({ ... });
+}
+```
+
+---
+
+## ⚖️ Summary: Clean Arch Decisions
+
+| Question                                                            | Answer                                                 |
+| ------------------------------------------------------------------- | ------------------------------------------------------ |
+| Should `Treasury` be a new feature?                                 | ✅ Yes                                                  |
+| Should `Transaction` link to a `Treasury`?                          | ✅ Yes, with a `treasuryId`                             |
+| Who owns the use case "Get all treasuries with their transactions"? | ✅ `Treasury` feature                                   |
+| Can transactions still live in their own feature?                   | ✅ Yes, with `treasuryId` awareness                     |
+| Where do you put shared types like `TransactionType` enum?          | 📁 Create `core/enums/transaction_type.dart` if shared |
+
+---
+
+Let me know if you want me to sketch out a sample `Treasury` entity or full `GetTreasuriesWithTransactions` use case class.

@@ -7,6 +7,9 @@ abstract class TransactionsRepository {
     String treasuryId,
   );
   Future<Either<Failure, Unit>> deleteTransaction(String id);
+  Future<Either<Failure, Unit>> deleteTransactionsByTreasuryId(
+    String treasuryId,
+  );
   Future<Either<Failure, Unit>> softDeleteTransaction(String id);
   Future<Either<Failure, Unit>> undoSoftDeleteTransaction(String id);
   Future<Either<Failure, Unit>> updateTransaction(Transaction transaction);

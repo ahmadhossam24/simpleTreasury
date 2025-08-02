@@ -192,3 +192,5 @@ class Transaction extends Equatable {
 ---
 
 Let me know if you want me to sketch out a sample `Treasury` entity or full `GetTreasuriesWithTransactions` use case class.
+question 2 and answer:
+“Do I need to touch multiple data sources?” → this handled in repository impl (in data/)

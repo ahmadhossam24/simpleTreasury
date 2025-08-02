@@ -8,6 +8,7 @@ abstract class TreasuriesRepository {
   Future<Either<Failure, Unit>> deleteTreasury(String id);
   Future<Either<Failure, Unit>> softDeleteTreasury(String id);
   Future<Either<Failure, Unit>> undoSoftDeleteTreasury(String id);
+  Future<Either<Failure, Unit>> calculateBalanceOfTreasury(String id);
   Future<Either<Failure, Unit>> updateTreasury(Treasury treasury);
   Future<Either<Failure, Unit>> addTreasury(Treasury treasury);
   Future<Either<Failure, List<TreasuryWithTransactions>>>

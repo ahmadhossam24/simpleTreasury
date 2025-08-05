@@ -1,29 +1,29 @@
 import 'package:equatable/equatable.dart';
 
-abstract class Failure extends Equatable {}
+abstract class Failure extends Equatable {
+  final String message;
+  const Failure(this.message);
 
-class OfflineFailure extends Failure {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [message];
+}
+
+class CacheFailure extends Failure {
+  const CacheFailure(super.message);
 }
 
 class DatabaseFailure extends Failure {
-  final String message;
+  const DatabaseFailure(super.message);
+}
 
-  DatabaseFailure(this.message);
-
-  @override
-  List<Object?> get props => [message];
+class UnexpectedFailure extends Failure {
+  const UnexpectedFailure(super.message);
 }
 
 class UnknownFailure extends Failure {
-  final String message;
-
-  UnknownFailure(this.message);
-
-  @override
-  List<Object?> get props => [message];
+  const UnknownFailure(super.message);
 }
+
 // probable failures i want to add :
 // Database lifecycle: open/init, migration, corruption, closed/locked DB
 // I/O & device state: storage full, permission denied

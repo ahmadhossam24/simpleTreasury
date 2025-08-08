@@ -82,7 +82,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
       final db = await _dbProvider.database;
       final maps = await db.query(
         'transactions',
-        where: 'treasuryId = ? AND deleted = 0',
+        where: 'treasuryId = ?',
         whereArgs: [treasuryId],
         orderBy: 'date DESC',
       );

@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:simpletreasury/core/error/failures.dart';
+import 'package:simpletreasury/features/transactions/domain/entities/transaction.dart';
 import 'package:simpletreasury/features/treasuries/data/models/treasury_model.dart';
 import 'package:sqflite/sqflite.dart' hide DatabaseException;
 import 'package:simpletreasury/core/database/db_provider.dart';
@@ -7,7 +7,6 @@ import 'package:simpletreasury/core/error/exceptions.dart';
 
 abstract class TreasuryLocalDataSource {
   Future<List<TreasuryModel>> getAllTreasuries();
-  Future<List<TreasuryWithTransactionsModel>> getTreasuriesWithTransactions();
   Future<double> calculateBalanceOfTreasury(String id);
 
   Future<Unit> addTreasury(TreasuryModel treasuryModel);
@@ -131,15 +130,32 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   }
 
   @override
-  Future<Either<Failure, List<TreasuryWithTransactions>>>
-  getTreasuriesWithTransactions() {
-    // TODO: implement getTreasuriesWithTransactions
-    throw UnimplementedError();
-  }
+  Future<double> calculateBalanceOfTreasury(String id) async {
+    try {
+      final db = await _dbProvider.database;
 
-  @override
-  Future<Either<Failure, double>> calculateBalanceOfTreasury(String id) {
-    // TODO: implement calculateBalanceOfTreasury
-    throw UnimplementedError();
+      // fetch only 'value' and 'type' for active (deleted==0) transactions
+      final maps = await db.query(
+        'transactions',
+        columns: ['value', 'type'],
+        where: 'treasuryId = ? AND deleted = 0',
+        whereArgs: [id],
+      );
+
+      // sum: imports add, exports subtract
+      double balance = 0.0;
+      for (final row in maps) {
+        final value = (row['value'] as num).toDouble();
+        final typeIndex = row['type'] as int;
+        final type = TransactionType.values[typeIndex];
+        balance += type == TransactionType.import ? value : -value;
+      }
+
+      return balance;
+    } on DatabaseException catch (e) {
+      throw DatabaseException(e.toString());
+    } catch (e) {
+      throw UnexpectedException(e.toString());
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:simpletreasury/core/error/failures.dart';
 import 'package:simpletreasury/core/error/exceptions.dart';
+import 'package:simpletreasury/features/transactions/data/dataSources/transaction_local_data_source.dart';
 import 'package:simpletreasury/features/treasuries/data/dataSources/treasury_local_data_source.dart';
 import 'package:simpletreasury/features/treasuries/data/models/treasury_model.dart';
 import 'package:simpletreasury/features/treasuries/domain/entities/treasury.dart';
@@ -11,8 +12,12 @@ typedef DeleteOrAddOrUpdate = Future<Unit> Function();
 
 class TreasuriesRepositoryImpl implements TreasuriesRepository {
   final TreasuryLocalDataSource treasuryLocalDataSource;
+  final TransactionLocalDataSource transactionLocalDataSource;
 
-  TreasuriesRepositoryImpl({required this.treasuryLocalDataSource});
+  TreasuriesRepositoryImpl(
+    this.transactionLocalDataSource, {
+    required this.treasuryLocalDataSource,
+  });
 
   @override
   Future<Either<Failure, Unit>> addTreasury(Treasury treasury) async {
@@ -79,9 +84,23 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
   Future<Either<Failure, List<TreasuryWithTransactions>>>
   getTreasuriesWithTransactions() async {
     try {
-      final treasuriesWithTransactions = await treasuryLocalDataSource
-          .getTreasuriesWithTransactions();
-      return right(treasuriesWithTransactions);
+      // Fetch all treasuries from local db
+      final treasuryModels = await treasuryLocalDataSource.getAllTreasuries();
+
+      // For each treasury, fetch its transactions in parallel
+      final futures = treasuryModels.map((treasuryModel) async {
+        final transactionModels = await transactionLocalDataSource
+            .getAllTransactions(treasuryModel.id);
+
+        // Map models (which extend entities) into the composite entity
+        return TreasuryWithTransactions(
+          treasury: treasuryModel,
+          transactions: transactionModels,
+        );
+      });
+
+      // Wait for all treasury + transaction lists to be assembled
+      return right(Future.wait(futures) as List<TreasuryWithTransactions>);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } on DatabaseException catch (e) {

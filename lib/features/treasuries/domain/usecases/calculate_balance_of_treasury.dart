@@ -7,7 +7,7 @@ class CalculateBalanceOfTreasury {
 
   CalculateBalanceOfTreasury(this.repository);
 
-  Future<Either<Failure, Unit>> call(String treasuryId) async {
+  Future<Either<Failure, double>> call(String treasuryId) async {
     return await repository.calculateBalanceOfTreasury(treasuryId);
   }
 }

@@ -94,7 +94,7 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> calculateBalanceOfTreasury(String id) async {
+  Future<Either<Failure, double>> calculateBalanceOfTreasury(String id) async {
     try {
       final balanceOfTreasury = await treasuryLocalDataSource
           .calculateBalanceOfTreasury(id);

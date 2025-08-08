@@ -1,15 +1,14 @@
 import 'package:dartz/dartz.dart';
-import 'package:simpletreasury/features/transactions/domain/entities/transaction.dart';
+import 'package:simpletreasury/core/error/failures.dart';
 import 'package:simpletreasury/features/treasuries/data/models/treasury_model.dart';
 import 'package:sqflite/sqflite.dart' hide DatabaseException;
 import 'package:simpletreasury/core/database/db_provider.dart';
 import 'package:simpletreasury/core/error/exceptions.dart';
-import 'package:simpletreasury/features/transactions/data/models/transaction_model.dart';
 
 abstract class TreasuryLocalDataSource {
   Future<List<TreasuryModel>> getAllTreasuries();
   Future<List<TreasuryWithTransactionsModel>> getTreasuriesWithTransactions();
-  Future<Unit> calculateBalanceOfTreasury(String id);
+  Future<int> calculateBalanceOfTreasury(String id);
 
   Future<Unit> addTreasury(TreasuryModel treasuryModel);
 
@@ -139,7 +138,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   }
 
   @override
-  Future<Either<Failure, Unit>> calculateBalanceOfTreasury(String id) {
+  Future<Either<Failure, int>> calculateBalanceOfTreasury(String id) {
     // TODO: implement calculateBalanceOfTreasury
     throw UnimplementedError();
   }

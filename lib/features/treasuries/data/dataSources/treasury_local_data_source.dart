@@ -8,7 +8,7 @@ import 'package:simpletreasury/core/error/exceptions.dart';
 abstract class TreasuryLocalDataSource {
   Future<List<TreasuryModel>> getAllTreasuries();
   Future<List<TreasuryWithTransactionsModel>> getTreasuriesWithTransactions();
-  Future<int> calculateBalanceOfTreasury(String id);
+  Future<double> calculateBalanceOfTreasury(String id);
 
   Future<Unit> addTreasury(TreasuryModel treasuryModel);
 
@@ -138,7 +138,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   }
 
   @override
-  Future<Either<Failure, int>> calculateBalanceOfTreasury(String id) {
+  Future<Either<Failure, double>> calculateBalanceOfTreasury(String id) {
     // TODO: implement calculateBalanceOfTreasury
     throw UnimplementedError();
   }

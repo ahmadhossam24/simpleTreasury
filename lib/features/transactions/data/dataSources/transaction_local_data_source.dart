@@ -19,7 +19,11 @@ abstract class TransactionLocalDataSource {
 }
 
 class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
-  final DBProvider _dbProvider = DBProvider.instance;
+  final DBProvider _dbProvider;
+
+  // Default constructor uses the singleton instance
+  TransactionLocalDataSourceImpl({DBProvider? dbProvider})
+    : _dbProvider = dbProvider ?? DBProvider.instance;
 
   @override
   Future<Unit> addTransaction(TransactionModel transactionModel) async {

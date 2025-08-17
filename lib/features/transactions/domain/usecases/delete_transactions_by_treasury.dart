@@ -7,7 +7,7 @@ class DeleteTransactionsByTreasuryIdUseCase {
 
   DeleteTransactionsByTreasuryIdUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(String treasuryId) {
+  Future<Either<Failure, Unit>> call(String treasuryId) {
     return repository.deleteTransactionsByTreasuryId(treasuryId);
   }
 }

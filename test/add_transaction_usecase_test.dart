@@ -34,7 +34,7 @@ void main() {
     () async {
       // arrange
       when(
-        () => mockRepository.addTransaction(any()),
+        () => mockRepository.addTransaction(tTransaction),
       ).thenAnswer((_) async => const Right(unit));
 
       // act
@@ -51,7 +51,7 @@ void main() {
     // arrange
     const failure = DatabaseFailure('DB error');
     when(
-      () => mockRepository.addTransaction(any()),
+      () => mockRepository.addTransaction(tTransaction),
     ).thenAnswer((_) async => const Left(failure));
 
     // act

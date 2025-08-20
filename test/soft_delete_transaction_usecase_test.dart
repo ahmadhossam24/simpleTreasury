@@ -23,7 +23,7 @@ void main() {
     () async {
       // arrange
       when(
-        () => mockRepository.deleteTransaction(any()),
+        () => mockRepository.softDeleteTransaction(any()),
       ).thenAnswer((_) async => const Right(unit));
 
       // act
@@ -31,7 +31,7 @@ void main() {
 
       // assert
       expect(result, const Right(unit));
-      verify(() => mockRepository.deleteTransaction("1")).called(1);
+      verify(() => mockRepository.softDeleteTransaction("1")).called(1);
       verifyNoMoreInteractions(mockRepository);
     },
   );
@@ -40,7 +40,7 @@ void main() {
     // arrange
     const failure = DatabaseFailure('DB error');
     when(
-      () => mockRepository.deleteTransaction(any()),
+      () => mockRepository.softDeleteTransaction(any()),
     ).thenAnswer((_) async => const Left(failure));
 
     // act
@@ -48,7 +48,7 @@ void main() {
 
     // assert
     expect(result, const Left(failure));
-    verify(() => mockRepository.deleteTransaction("1")).called(1);
+    verify(() => mockRepository.softDeleteTransaction("1")).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 }

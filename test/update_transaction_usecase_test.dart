@@ -34,7 +34,7 @@ void main() {
     () async {
       // arrange
       when(
-        () => mockRepository.updateTransaction(any()),
+        () => mockRepository.updateTransaction(tTransaction),
       ).thenAnswer((_) async => const Right(unit));
 
       // act
@@ -42,7 +42,7 @@ void main() {
 
       // assert
       expect(result, const Right(unit));
-      verify(() => mockRepository.addTransaction(tTransaction)).called(1);
+      verify(() => mockRepository.updateTransaction(tTransaction)).called(1);
       verifyNoMoreInteractions(mockRepository);
     },
   );
@@ -51,7 +51,7 @@ void main() {
     // arrange
     const failure = DatabaseFailure('DB error');
     when(
-      () => mockRepository.addTransaction(any()),
+      () => mockRepository.updateTransaction(tTransaction),
     ).thenAnswer((_) async => const Left(failure));
 
     // act
@@ -59,7 +59,7 @@ void main() {
 
     // assert
     expect(result, const Left(failure));
-    verify(() => mockRepository.addTransaction(tTransaction)).called(1);
+    verify(() => mockRepository.updateTransaction(tTransaction)).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 }

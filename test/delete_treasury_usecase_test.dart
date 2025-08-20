@@ -2,28 +2,27 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:simpletreasury/core/error/failures.dart';
-import 'package:simpletreasury/features/transactions/domain/repositories/transactions_repository.dart';
-import 'package:simpletreasury/features/transactions/domain/usecases/undo_soft_delete_transaction.dart';
+import 'package:simpletreasury/features/treasuries/domain/repositories/treasuries_repository.dart';
+import 'package:simpletreasury/features/treasuries/domain/usecases/delete_treasury.dart';
 
 // Mock class
-class MockTransactionsRepository extends Mock
-    implements TransactionsRepository {}
+class MockTreasuriesRepository extends Mock implements TreasuriesRepository {}
 
 void main() {
-  late UndoDeleteTransactionUsecase usecase;
-  late MockTransactionsRepository mockRepository;
+  late DeleteTreasuryUsecase usecase;
+  late MockTreasuriesRepository mockRepository;
 
   setUp(() {
-    mockRepository = MockTransactionsRepository();
-    usecase = UndoDeleteTransactionUsecase(mockRepository);
+    mockRepository = MockTreasuriesRepository();
+    usecase = DeleteTreasuryUsecase(mockRepository);
   });
 
   test(
-    'should call repository.undoSoftDeleteTransaction and return Right(Unit) on success',
+    'should call repository.deleteTreasury and return Right(Unit) on success',
     () async {
       // arrange
       when(
-        () => mockRepository.undoSoftDeleteTransaction(any()),
+        () => mockRepository.deleteTreasury(any()),
       ).thenAnswer((_) async => const Right(unit));
 
       // act
@@ -31,7 +30,7 @@ void main() {
 
       // assert
       expect(result, const Right(unit));
-      verify(() => mockRepository.undoSoftDeleteTransaction("1")).called(1);
+      verify(() => mockRepository.deleteTreasury("1")).called(1);
       verifyNoMoreInteractions(mockRepository);
     },
   );
@@ -40,7 +39,7 @@ void main() {
     // arrange
     const failure = DatabaseFailure('DB error');
     when(
-      () => mockRepository.undoSoftDeleteTransaction(any()),
+      () => mockRepository.deleteTreasury(any()),
     ).thenAnswer((_) async => const Left(failure));
 
     // act
@@ -48,7 +47,7 @@ void main() {
 
     // assert
     expect(result, const Left(failure));
-    verify(() => mockRepository.undoSoftDeleteTransaction("1")).called(1);
+    verify(() => mockRepository.deleteTreasury("1")).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 }

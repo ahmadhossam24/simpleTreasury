@@ -14,8 +14,8 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
   final TreasuryLocalDataSource treasuryLocalDataSource;
   final TransactionLocalDataSource transactionLocalDataSource;
 
-  TreasuriesRepositoryImpl(
-    this.transactionLocalDataSource, {
+  TreasuriesRepositoryImpl({
+    required this.transactionLocalDataSource,
     required this.treasuryLocalDataSource,
   });
 
@@ -97,10 +97,11 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
           treasury: treasuryModel,
           transactions: transactionModels,
         );
-      });
+      }).toList();
 
-      // Wait for all treasury + transaction lists to be assembled
-      return right(Future.wait(futures) as List<TreasuryWithTransactions>);
+      final treasuryWithTransactions = await Future.wait(futures);
+
+      return Right(treasuryWithTransactions);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } on DatabaseException catch (e) {

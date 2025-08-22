@@ -19,12 +19,25 @@ abstract class TreasuryLocalDataSource {
 }
 
 class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
-  final DBProvider _dbProvider = DBProvider.instance;
+  final DBProvider _dbProvider;
+  final Database? _testDb;
+
+  TreasuryLocalDataSourceImpl({DBProvider? dbProvider})
+    : _dbProvider = dbProvider ?? DBProvider.instance,
+      _testDb = null;
+
+  TreasuryLocalDataSourceImpl.test(
+    Database db,
+  ) // <-- THIS IS THE NAMED CONSTRUCTOR
+  : _dbProvider = DBProvider.instance,
+      _testDb = db;
+
+  Future<Database> get _db async => _testDb ?? await _dbProvider.database;
 
   @override
   Future<Unit> addTreasury(TreasuryModel treasuryModel) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.insert('treasuries', {
         'id': treasuryModel.id,
         'title': treasuryModel.title,
@@ -41,7 +54,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   @override
   Future<Unit> deleteTreasury(String treasuryId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.delete('treasuries', where: 'id = ?', whereArgs: [treasuryId]);
       return unit;
     } on DatabaseException catch (e) {
@@ -54,7 +67,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   @override
   Future<List<TreasuryModel>> getAllTreasuries() async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       final maps = await db.query('treasuries', orderBy: 'date DESC');
       return maps
           .map(
@@ -75,7 +88,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   @override
   Future<Unit> softDeleteTreasury(String treasuryId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.update(
         'treasuries',
         {'deleted': 1},
@@ -93,7 +106,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   @override
   Future<Unit> undoSoftDeleteTreasury(String treasuryId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.update(
         'treasuries',
         {'deleted': 0},
@@ -111,7 +124,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   @override
   Future<Unit> updateTreasury(TreasuryModel treasuryModel) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.update(
         'treasuries',
         {
@@ -132,7 +145,7 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
   @override
   Future<double> calculateBalanceOfTreasury(String id) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
 
       // fetch only 'value' and 'type' for active (deleted==0) transactions
       final maps = await db.query(

@@ -1,283 +1,214 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:simpletreasury/core/database/db_provider.dart';
-import 'package:simpletreasury/core/error/exceptions.dart';
-import 'package:simpletreasury/features/transactions/data/dataSources/transaction_local_data_source.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:simpletreasury/features/transactions/data/datasources/transaction_local_data_source.dart';
 import 'package:simpletreasury/features/transactions/data/models/transaction_model.dart';
 import 'package:simpletreasury/features/transactions/domain/entities/transaction.dart';
-import 'package:sqflite/sqflite.dart' as sqflite;
-
-class MockDatabase extends Mock implements sqflite.Database {}
-
-class MockDBProvider extends Mock implements DBProvider {}
-
-class FakeSqfliteDatabaseException extends sqflite.DatabaseException {
-  FakeSqfliteDatabaseException(String super.message);
-
-  @override
-  int? getResultCode() {
-    // TODO: implement getResultCode
-    throw UnimplementedError();
-  }
-
-  @override
-  // TODO: implement result
-  Object? get result => throw UnimplementedError();
-}
 
 void main() {
-  late MockDBProvider mockDBProvider;
-  late MockDatabase mockDatabase;
   late TransactionLocalDataSourceImpl dataSource;
+  late Database db;
 
-  final tTransactionModel = TransactionModel(
-    id: '1',
-    treasuryId: 'treasury1',
-    title: 'Test Transaction',
-    value: 100,
-    date: DateTime(2023, 1, 1),
-    type: TransactionType.import,
-    deleted: false,
-  );
+  setUp(() async {
+    // Initialize ffi for unit tests
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
 
-  setUp(() {
-    mockDBProvider = MockDBProvider();
-    mockDatabase = MockDatabase();
-    when(() => mockDBProvider.database).thenAnswer((_) async => mockDatabase);
-    dataSource = TransactionLocalDataSourceImpl(dbProvider: mockDBProvider);
+    // In-memory DB
+    db = await databaseFactory.openDatabase(inMemoryDatabasePath);
+
+    // Create schema (match DBProvider._onCreate)
+    await db.execute('''
+      CREATE TABLE transactions (
+        id TEXT PRIMARY KEY,
+        treasuryId TEXT NOT NULL,
+        title TEXT,
+        value REAL NOT NULL,
+        date INTEGER NOT NULL,
+        type INTEGER NOT NULL,
+        deleted INTEGER NOT NULL DEFAULT 0
+      )
+    ''');
+
+    dataSource = TransactionLocalDataSourceImpl.test(db);
   });
 
-  void runUnitMethodTest({
-    required String methodName,
-    required Future<Unit> Function() callMethod,
-    required void Function() verifyCall,
-  }) {
-    group(methodName, () {
-      test('should call correct db method and return unit', () async {
-        when(
-          () => mockDatabase.insert(
-            any(),
-            any(),
-            conflictAlgorithm: any(named: 'conflictAlgorithm'),
-          ),
-        ).thenAnswer((_) async => 1);
-        when(
-          () => mockDatabase.update(
-            any(),
-            any(),
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-          ),
-        ).thenAnswer((_) async => 1);
-        when(
-          () => mockDatabase.delete(
-            any(),
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-          ),
-        ).thenAnswer((_) async => 1);
+  tearDown(() async {
+    await db.close();
+  });
 
-        final result = await callMethod();
-
-        expect(result, unit);
-        verifyCall();
-      });
-
-      test(
-        'should throw DatabaseException on sqflite.DatabaseException',
-        () async {
-          when(
-            () => mockDatabase.insert(
-              any(),
-              any(),
-              conflictAlgorithm: any(named: 'conflictAlgorithm'),
-            ),
-          ).thenThrow(FakeSqfliteDatabaseException('db fail'));
-          when(
-            () => mockDatabase.update(
-              any(),
-              any(),
-              where: any(named: 'where'),
-              whereArgs: any(named: 'whereArgs'),
-            ),
-          ).thenThrow(FakeSqfliteDatabaseException('db fail'));
-          when(
-            () => mockDatabase.delete(
-              any(),
-              where: any(named: 'where'),
-              whereArgs: any(named: 'whereArgs'),
-            ),
-          ).thenThrow(FakeSqfliteDatabaseException('db fail'));
-
-          expect(callMethod, throwsA(isA<DatabaseException>()));
-        },
+  group('TransactionLocalDataSource', () {
+    test('addTransaction should insert a transaction', () async {
+      final transaction = TransactionModel(
+        id: '1',
+        treasuryId: 't1',
+        title: 'Test Tx',
+        value: 100.0,
+        date: DateTime(2025, 1, 1),
+        type: TransactionType.import,
+        deleted: false,
       );
 
-      test('should throw UnexpectedException on unknown error', () async {
-        when(
-          () => mockDatabase.insert(
-            any(),
-            any(),
-            conflictAlgorithm: any(named: 'conflictAlgorithm'),
-          ),
-        ).thenThrow(Exception('oops'));
-        when(
-          () => mockDatabase.update(
-            any(),
-            any(),
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-          ),
-        ).thenThrow(Exception('oops'));
-        when(
-          () => mockDatabase.delete(
-            any(),
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-          ),
-        ).thenThrow(Exception('oops'));
+      await dataSource.addTransaction(transaction);
 
-        expect(callMethod, throwsA(isA<UnexpectedException>()));
-      });
-    });
-  }
-
-  runUnitMethodTest(
-    methodName: 'addTransaction',
-    callMethod: () => dataSource.addTransaction(tTransactionModel),
-    verifyCall: () => verify(
-      () => mockDatabase.insert(
-        'transactions',
-        any(),
-        conflictAlgorithm: sqflite.ConflictAlgorithm.replace,
-      ),
-    ).called(1),
-  );
-
-  runUnitMethodTest(
-    methodName: 'updateTransaction',
-    callMethod: () => dataSource.updateTransaction(tTransactionModel),
-    verifyCall: () => verify(
-      () => mockDatabase.update(
-        'transactions',
-        any(),
-        where: 'id = ?',
-        whereArgs: [tTransactionModel.id],
-      ),
-    ).called(1),
-  );
-
-  runUnitMethodTest(
-    methodName: 'deleteTransaction',
-    callMethod: () => dataSource.deleteTransaction('1'),
-    verifyCall: () => verify(
-      () => mockDatabase.delete(
-        'transactions',
-        where: 'id = ?',
-        whereArgs: ['1'],
-      ),
-    ).called(1),
-  );
-
-  runUnitMethodTest(
-    methodName: 'deleteTransactionsByTreasuryId',
-    callMethod: () => dataSource.deleteTransactionsByTreasuryId('treasury1'),
-    verifyCall: () => verify(
-      () => mockDatabase.delete(
-        'transactions',
-        where: 'treasuryId = ?',
-        whereArgs: ['treasury1'],
-      ),
-    ).called(1),
-  );
-
-  runUnitMethodTest(
-    methodName: 'softDeleteTransaction',
-    callMethod: () => dataSource.softDeleteTransaction('1'),
-    verifyCall: () => verify(
-      () => mockDatabase.update(
-        'transactions',
-        {'deleted': 1},
-        where: 'id = ?',
-        whereArgs: ['1'],
-      ),
-    ).called(1),
-  );
-
-  runUnitMethodTest(
-    methodName: 'undoSoftDeleteTransaction',
-    callMethod: () => dataSource.undoSoftDeleteTransaction('1'),
-    verifyCall: () => verify(
-      () => mockDatabase.update(
-        'transactions',
-        {'deleted': 0},
-        where: 'id = ?',
-        whereArgs: ['1'],
-      ),
-    ).called(1),
-  );
-
-  group('getAllTransactions', () {
-    final dbMap = {
-      'id': '1',
-      'treasuryId': 'treasury1',
-      'title': 'Test Transaction',
-      'value': 100,
-      'date': DateTime(2023, 1, 1).millisecondsSinceEpoch,
-      'type': TransactionType.import.index,
-      'deleted': 0,
-    };
-
-    test('should return List<TransactionModel> on success', () async {
-      when(
-        () => mockDatabase.query(
-          any(),
-          where: any(named: 'where'),
-          whereArgs: any(named: 'whereArgs'),
-          orderBy: any(named: 'orderBy'),
-        ),
-      ).thenAnswer((_) async => [dbMap]);
-
-      final result = await dataSource.getAllTransactions('treasury1');
-
-      expect(result, isA<List<TransactionModel>>());
-      expect(result.first.id, '1');
+      final results = await db.query('transactions');
+      expect(results.length, 1);
+      expect(results.first['title'], 'Test Tx');
     });
 
     test(
-      'should throw DatabaseException on sqflite.DatabaseException',
+      'getAllTransactions should return transactions for treasuryId',
       () async {
-        when(
-          () => mockDatabase.query(
-            any(),
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-            orderBy: any(named: 'orderBy'),
-          ),
-        ).thenThrow(FakeSqfliteDatabaseException('db fail'));
-
-        expect(
-          () => dataSource.getAllTransactions('treasury1'),
-          throwsA(isA<DatabaseException>()),
+        final tx1 = TransactionModel(
+          id: '2',
+          treasuryId: 't1',
+          title: 'Tx 1',
+          value: 50.0,
+          date: DateTime(2025, 1, 2),
+          type: TransactionType.export,
+          deleted: false,
         );
+        final tx2 = TransactionModel(
+          id: '3',
+          treasuryId: 't1',
+          title: 'Tx 2',
+          value: 30.0,
+          date: DateTime(2025, 1, 3),
+          type: TransactionType.export,
+          deleted: false,
+        );
+
+        await dataSource.addTransaction(tx1);
+        await dataSource.addTransaction(tx2);
+
+        final results = await dataSource.getAllTransactions('t1');
+
+        expect(results.length, 2);
+        expect(results.first.title, 'Tx 2'); // ordered by date DESC
       },
     );
 
-    test('should throw UnexpectedException on unknown error', () async {
-      when(
-        () => mockDatabase.query(
-          any(),
-          where: any(named: 'where'),
-          whereArgs: any(named: 'whereArgs'),
-          orderBy: any(named: 'orderBy'),
-        ),
-      ).thenThrow(Exception('oops'));
-
-      expect(
-        () => dataSource.getAllTransactions('treasury1'),
-        throwsA(isA<UnexpectedException>()),
+    test('updateTransaction should modify an existing transaction', () async {
+      final tx = TransactionModel(
+        id: '4',
+        treasuryId: 't1',
+        title: 'Old Title',
+        value: 20.0,
+        date: DateTime(2025, 1, 4),
+        type: TransactionType.export,
+        deleted: false,
       );
+
+      await dataSource.addTransaction(tx);
+
+      final updated = TransactionModel(
+        id: '4',
+        treasuryId: 't1',
+        title: 'New Title',
+        value: 99.0,
+        date: DateTime(2025, 1, 5),
+        type: TransactionType.import,
+        deleted: false,
+      );
+
+      await dataSource.updateTransaction(updated);
+
+      final results = await dataSource.getAllTransactions('t1');
+      expect(results.first.title, 'New Title');
+      expect(results.first.value, 99.0);
     });
+
+    test('deleteTransaction should remove the row', () async {
+      final tx = TransactionModel(
+        id: '5',
+        treasuryId: 't1',
+        title: 'To Delete',
+        value: 10.0,
+        date: DateTime.now(),
+        type: TransactionType.export,
+        deleted: false,
+      );
+
+      await dataSource.addTransaction(tx);
+      await dataSource.deleteTransaction('5');
+
+      final results = await dataSource.getAllTransactions('t1');
+      expect(results, isEmpty);
+    });
+
+    test('softDeleteTransaction should set deleted=1', () async {
+      final tx = TransactionModel(
+        id: '6',
+        treasuryId: 't1',
+        title: 'Soft Delete',
+        value: 40.0,
+        date: DateTime.now(),
+        type: TransactionType.import,
+        deleted: false,
+      );
+
+      await dataSource.addTransaction(tx);
+      await dataSource.softDeleteTransaction('6');
+
+      final rows = await db.query(
+        'transactions',
+        where: 'id = ?',
+        whereArgs: ['6'],
+      );
+      expect(rows.first['deleted'], 1);
+    });
+
+    test('undoSoftDeleteTransaction should set deleted=0', () async {
+      final tx = TransactionModel(
+        id: '7',
+        treasuryId: 't1',
+        title: 'Undo Delete',
+        value: 40.0,
+        date: DateTime.now(),
+        type: TransactionType.export,
+        deleted: true,
+      );
+
+      await dataSource.addTransaction(tx);
+      await dataSource.undoSoftDeleteTransaction('7');
+
+      final rows = await db.query(
+        'transactions',
+        where: 'id = ?',
+        whereArgs: ['7'],
+      );
+      expect(rows.first['deleted'], 0);
+    });
+
+    test(
+      'deleteTransactionsByTreasuryId should remove all rows for treasury',
+      () async {
+        final tx1 = TransactionModel(
+          id: '8',
+          treasuryId: 't1',
+          title: 'Tx A',
+          value: 5.0,
+          date: DateTime.now(),
+          type: TransactionType.import,
+          deleted: false,
+        );
+        final tx2 = TransactionModel(
+          id: '9',
+          treasuryId: 't1',
+          title: 'Tx B',
+          value: 15.0,
+          date: DateTime.now(),
+          type: TransactionType.export,
+          deleted: false,
+        );
+
+        await dataSource.addTransaction(tx1);
+        await dataSource.addTransaction(tx2);
+
+        await dataSource.deleteTransactionsByTreasuryId('t1');
+
+        final results = await dataSource.getAllTransactions('t1');
+        expect(results, isEmpty);
+      },
+    );
   });
 }

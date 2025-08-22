@@ -31,15 +31,24 @@ class DBProvider {
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE transactions (
-        id TEXT PRIMARY KEY,
-        treasuryId TEXT NOT NULL,
-        title TEXT,
-        value REAL NOT NULL,
-        date INTEGER NOT NULL,
-        type INTEGER NOT NULL,
-        deleted INTEGER NOT NULL DEFAULT 0
-      )
-    ''');
+    CREATE TABLE transactions (
+      id TEXT PRIMARY KEY,
+      treasuryId TEXT NOT NULL,
+      title TEXT,
+      value REAL NOT NULL,
+      date INTEGER NOT NULL,
+      type INTEGER NOT NULL,
+      deleted INTEGER NOT NULL DEFAULT 0
+    )
+  ''');
+
+    await db.execute('''
+    CREATE TABLE treasuries (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      deleted INTEGER NOT NULL DEFAULT 0,
+      date INTEGER
+    )
+  ''');
   }
 }

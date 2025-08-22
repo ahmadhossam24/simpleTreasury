@@ -20,15 +20,25 @@ abstract class TransactionLocalDataSource {
 
 class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   final DBProvider _dbProvider;
+  final Database? _testDb;
 
-  // Default constructor uses the singleton instance
+  // Default constructor → production, uses singleton DB
   TransactionLocalDataSourceImpl({DBProvider? dbProvider})
-    : _dbProvider = dbProvider ?? DBProvider.instance;
+    : _dbProvider = dbProvider ?? DBProvider.instance,
+      _testDb = null;
+
+  // Named constructor → for tests, lets you inject an in-memory DB
+  TransactionLocalDataSourceImpl.test(Database db)
+    : _dbProvider = DBProvider.instance,
+      _testDb = db;
+
+  // Use test DB if provided, else default DBProvider
+  Future<Database> get _db async => _testDb ?? await _dbProvider.database;
 
   @override
   Future<Unit> addTransaction(TransactionModel transactionModel) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.insert('transactions', {
         'id': transactionModel.id,
         'treasuryId': transactionModel.treasuryId,
@@ -49,7 +59,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   @override
   Future<Unit> deleteTransaction(String transactionId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.delete(
         'transactions',
         where: 'id = ?',
@@ -66,7 +76,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   @override
   Future<Unit> deleteTransactionsByTreasuryId(String treasuryId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.delete(
         'transactions',
         where: 'treasuryId = ?',
@@ -81,9 +91,9 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   }
 
   @override
-  Future<List<TransactionModel>> getAllTransactions(treasuryId) async {
+  Future<List<TransactionModel>> getAllTransactions(String treasuryId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       final maps = await db.query(
         'transactions',
         where: 'treasuryId = ?',
@@ -113,7 +123,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   @override
   Future<Unit> softDeleteTransaction(String transactionId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.update(
         'transactions',
         {'deleted': 1},
@@ -131,7 +141,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   @override
   Future<Unit> undoSoftDeleteTransaction(String transactionId) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.update(
         'transactions',
         {'deleted': 0},
@@ -149,7 +159,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   @override
   Future<Unit> updateTransaction(TransactionModel transactionModel) async {
     try {
-      final db = await _dbProvider.database;
+      final db = await _db;
       await db.update(
         'transactions',
         {

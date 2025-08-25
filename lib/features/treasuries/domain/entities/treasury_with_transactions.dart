@@ -4,15 +4,17 @@ import 'package:simpletreasury/features/treasuries/domain/entities/treasury.dart
 
 class TreasuryWithTransactions extends Equatable {
   final Treasury treasury;
+  final double balance;
   final List<Transaction> transactions;
 
   const TreasuryWithTransactions({
     required this.treasury,
     required this.transactions,
+    required this.balance,
   });
 
   @override
-  List<Object?> get props => [treasury, transactions];
+  List<Object?> get props => [treasury, transactions, balance];
 }
 
 // what to test here and why 

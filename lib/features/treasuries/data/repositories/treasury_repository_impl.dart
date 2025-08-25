@@ -92,9 +92,14 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
         final transactionModels = await transactionLocalDataSource
             .getAllTransactions(treasuryModel.id);
 
+        // calculate the balance for this treasury
+        final balance = await treasuryLocalDataSource
+            .calculateBalanceOfTreasury(treasuryModel.id);
+
         // Map models (which extend entities) into the composite entity
         return TreasuryWithTransactions(
           treasury: treasuryModel,
+          balance: balance,
           transactions: transactionModels,
         );
       }).toList();

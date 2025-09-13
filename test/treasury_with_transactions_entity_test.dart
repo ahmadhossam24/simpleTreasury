@@ -25,16 +25,20 @@ void main() {
       deleted: false,
     );
     final tTreasury1 = Treasury(id: "1", title: "fatherCredit", deleted: false);
+    final double balance = 87;
     final tTreasuryWithTransactions1 = TreasuryWithTransactions(
       treasury: tTreasury1,
+      balance: balance,
       transactions: [tTransaction1, tTransaction2],
     );
     final tTreasuryWithTransactions2 = TreasuryWithTransactions(
       treasury: tTreasury1,
+      balance: balance,
       transactions: [tTransaction1, tTransaction2],
     );
     final tTreasuryWithTransactionsDifferent = TreasuryWithTransactions(
       treasury: tTreasury1,
+      balance: balance,
       transactions: [tTransaction1],
     );
     test("should support value equality", () {

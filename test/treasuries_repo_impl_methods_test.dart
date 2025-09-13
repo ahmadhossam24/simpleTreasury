@@ -39,8 +39,11 @@ void main() {
     deleted: false,
   );
 
+  final double balance = 87;
+
   final tTreasuryWithTransactions = TreasuryWithTransactions(
     treasury: tTreasuryModel,
+    balance: balance,
     transactions: [tTransactionModel],
   );
 
@@ -255,6 +258,10 @@ void main() {
       when(
         () => mockTransactionDataSource.getAllTransactions(any()),
       ).thenAnswer((_) async => [tTransactionModel]);
+
+      when(
+        () => mockTreasuryDataSource.calculateBalanceOfTreasury(any()),
+      ).thenAnswer((_) async => balance);
       final result = await treasuriesRepository.getTreasuriesWithTransactions();
       expect(result.getOrElse(() => []), listModel);
     });
@@ -266,6 +273,10 @@ void main() {
 
       when(
         () => mockTransactionDataSource.getAllTransactions(any()),
+      ).thenThrow(CacheException('cache fail'));
+
+      when(
+        () => mockTreasuryDataSource.calculateBalanceOfTreasury(any()),
       ).thenThrow(CacheException('cache fail'));
       final result = await treasuriesRepository.getTreasuriesWithTransactions();
       expect(result, Left(CacheFailure('cache fail')));
@@ -279,6 +290,10 @@ void main() {
       when(
         () => mockTransactionDataSource.getAllTransactions(any()),
       ).thenThrow(DatabaseException('db fail'));
+
+      when(
+        () => mockTreasuryDataSource.calculateBalanceOfTreasury(any()),
+      ).thenThrow(CacheException('db fail'));
       final result = await treasuriesRepository.getTreasuriesWithTransactions();
       expect(result, Left(DatabaseFailure('db fail')));
     });
@@ -291,6 +306,10 @@ void main() {
       when(
         () => mockTransactionDataSource.getAllTransactions(any()),
       ).thenThrow(UnexpectedException('unexpected fail'));
+
+      when(
+        () => mockTreasuryDataSource.calculateBalanceOfTreasury(any()),
+      ).thenThrow(CacheException('unexpected fail'));
       final result = await treasuriesRepository.getTreasuriesWithTransactions();
       expect(result, Left(UnexpectedFailure('unexpected fail')));
     });
@@ -303,6 +322,10 @@ void main() {
       when(
         () => mockTransactionDataSource.getAllTransactions(any()),
       ).thenThrow(Exception('unknown'));
+
+      when(
+        () => mockTreasuryDataSource.calculateBalanceOfTreasury(any()),
+      ).thenThrow(CacheException('unknown'));
       final result = await treasuriesRepository.getTreasuriesWithTransactions();
       expect(result, Left(UnknownFailure('Unknown error occurred')));
     });

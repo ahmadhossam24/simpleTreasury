@@ -25,8 +25,11 @@ void main() {
   );
   final tTreasury = Treasury(id: '1', title: 'Sample Treasury', deleted: false);
 
+  final double balance = 87;
+
   final tTreasuryWithTransaction = TreasuryWithTransactions(
     treasury: tTreasury,
+    balance: balance,
     transactions: [tTransaction],
   );
 

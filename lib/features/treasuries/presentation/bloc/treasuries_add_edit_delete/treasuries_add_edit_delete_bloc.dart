@@ -7,6 +7,8 @@ import 'package:simpletreasury/core/strings/messages.dart';
 import 'package:simpletreasury/features/treasuries/domain/entities/treasury.dart';
 import 'package:simpletreasury/features/treasuries/domain/usecases/add_treasury.dart';
 import 'package:simpletreasury/features/treasuries/domain/usecases/delete_treasury_with_transactions.dart';
+import 'package:simpletreasury/features/treasuries/domain/usecases/soft_delete_treasuries.dart';
+import 'package:simpletreasury/features/treasuries/domain/usecases/undo_soft_delete_treasuries.dart';
 import 'package:simpletreasury/features/treasuries/domain/usecases/update_treasuries.dart';
 
 part 'treasuries_add_edit_delete_event.dart';
@@ -17,10 +19,14 @@ class TreasuriesAddEditDeleteBloc
   final AddTreasury addTreasury;
   final UpdateTreasury updateTreasury;
   final DeleteTreasuryUseCase deleteTreasuryWithTransactions;
+  final SoftDeleteTreasuryUsecase softDeleteTreasury;
+  final UndoDeleteTreasuryUsecase undoSoftDeleteTreasury;
   TreasuriesAddEditDeleteBloc({
     required this.addTreasury,
     required this.updateTreasury,
     required this.deleteTreasuryWithTransactions,
+    required this.softDeleteTreasury,
+    required this.undoSoftDeleteTreasury,
   }) : super(TreasuriesAddEditDeleteInitial()) {
     on<TreasuriesAddEditDeleteEvent>((event, emit) async {
       if (event is AddTreasuryEvent) {
@@ -56,6 +62,30 @@ class TreasuriesAddEditDeleteBloc
           _eitherDoneMessageOrErrorState(
             failureOrDoneMessage,
             DELETED_SUCCESS_MESSAGE,
+          ),
+        );
+      } else if (event is SoftDeleteTreasuryEvent) {
+        emit(LoadingAddEditDeleteTreasuryState());
+
+        final failureOrDoneMessage = await softDeleteTreasury(event.treasuryId);
+
+        emit(
+          _eitherDoneMessageOrErrorState(
+            failureOrDoneMessage,
+            SOFT_DELETED_SUCCESS_MESSAGE,
+          ),
+        );
+      } else if (event is UndoSoftDeleteTreasuryEvent) {
+        emit(LoadingAddEditDeleteTreasuryState());
+
+        final failureOrDoneMessage = await undoSoftDeleteTreasury(
+          event.treasuryId,
+        );
+
+        emit(
+          _eitherDoneMessageOrErrorState(
+            failureOrDoneMessage,
+            UNDO_SOFT_DELETED_SUCCESS_MESSAGE,
           ),
         );
       }

@@ -33,3 +33,21 @@ class DeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
   @override
   List<Object> get props => [treasuryId];
 }
+
+class SoftDeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
+  final String treasuryId;
+
+  SoftDeleteTreasuryEvent({required this.treasuryId});
+
+  @override
+  List<Object> get props => [treasuryId];
+}
+
+class UndoSoftDeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
+  final String treasuryId;
+
+  UndoSoftDeleteTreasuryEvent({required this.treasuryId});
+
+  @override
+  List<Object> get props => [treasuryId];
+}

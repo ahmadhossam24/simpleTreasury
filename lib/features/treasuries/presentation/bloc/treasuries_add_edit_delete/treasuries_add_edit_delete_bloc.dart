@@ -37,7 +37,7 @@ class TreasuriesAddEditDeleteBloc
         emit(
           _eitherDoneMessageOrErrorState(
             failureOrDoneMessage,
-            ADDED_SUCCESS_MESSAGE,
+            TREASURY_ADDED_SUCCESS_MESSAGE,
           ),
         );
       } else if (event is UpdateTreasuryEvent) {
@@ -48,7 +48,7 @@ class TreasuriesAddEditDeleteBloc
         emit(
           _eitherDoneMessageOrErrorState(
             failureOrDoneMessage,
-            UPDATED_SUCCESS_MESSAGE,
+            TREASURY_UPDATED_SUCCESS_MESSAGE,
           ),
         );
       } else if (event is DeleteTreasuryEvent) {
@@ -61,7 +61,7 @@ class TreasuriesAddEditDeleteBloc
         emit(
           _eitherDoneMessageOrErrorState(
             failureOrDoneMessage,
-            DELETED_SUCCESS_MESSAGE,
+            TREASURY_DELETED_SUCCESS_MESSAGE,
           ),
         );
       } else if (event is SoftDeleteTreasuryEvent) {
@@ -72,7 +72,7 @@ class TreasuriesAddEditDeleteBloc
         emit(
           _eitherDoneMessageOrErrorState(
             failureOrDoneMessage,
-            SOFT_DELETED_SUCCESS_MESSAGE,
+            TREASURY_SOFT_DELETED_SUCCESS_MESSAGE,
           ),
         );
       } else if (event is UndoSoftDeleteTreasuryEvent) {
@@ -85,7 +85,7 @@ class TreasuriesAddEditDeleteBloc
         emit(
           _eitherDoneMessageOrErrorState(
             failureOrDoneMessage,
-            UNDO_SOFT_DELETED_SUCCESS_MESSAGE,
+            TREASURY_UNDO_SOFT_DELETED_SUCCESS_MESSAGE,
           ),
         );
       }

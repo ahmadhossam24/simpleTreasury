@@ -10,7 +10,7 @@ sealed class TransactionAddEditDeleteEvent extends Equatable {
 class AddTransactionEvent extends TransactionAddEditDeleteEvent {
   final Transaction transaction;
 
-  AddTransactionEvent({required this.transaction});
+  const AddTransactionEvent({required this.transaction});
 
   @override
   List<Object> get props => [transaction];
@@ -19,7 +19,7 @@ class AddTransactionEvent extends TransactionAddEditDeleteEvent {
 class UpdateTransactionEvent extends TransactionAddEditDeleteEvent {
   final Transaction transaction;
 
-  UpdateTransactionEvent({required this.transaction});
+  const UpdateTransactionEvent({required this.transaction});
 
   @override
   List<Object> get props => [transaction];
@@ -28,7 +28,7 @@ class UpdateTransactionEvent extends TransactionAddEditDeleteEvent {
 class DeleteTransactionEvent extends TransactionAddEditDeleteEvent {
   final String transactionId;
 
-  DeleteTransactionEvent({required this.transactionId});
+  const DeleteTransactionEvent({required this.transactionId});
 
   @override
   List<Object> get props => [transactionId];
@@ -37,7 +37,7 @@ class DeleteTransactionEvent extends TransactionAddEditDeleteEvent {
 class SoftDeleteTransactionEvent extends TransactionAddEditDeleteEvent {
   final String transactionId;
 
-  SoftDeleteTransactionEvent({required this.transactionId});
+  const SoftDeleteTransactionEvent({required this.transactionId});
 
   @override
   List<Object> get props => [transactionId];
@@ -46,7 +46,7 @@ class SoftDeleteTransactionEvent extends TransactionAddEditDeleteEvent {
 class UndoSoftDeleteTransactionEvent extends TransactionAddEditDeleteEvent {
   final String transactionId;
 
-  UndoSoftDeleteTransactionEvent({required this.transactionId});
+  const UndoSoftDeleteTransactionEvent({required this.transactionId});
 
   @override
   List<Object> get props => [transactionId];

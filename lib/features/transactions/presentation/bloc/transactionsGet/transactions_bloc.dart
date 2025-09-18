@@ -16,9 +16,7 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
     on<TransactionsEvent>((event, emit) async {
       if (event is GetTransactionsByTreasuryId) {
         emit(LoadingTransactionsState());
-        final failureOrTransactions = await getTransactions(
-          event.treasuryId,
-        ); // wait here until fixing domain and data layers for getTransactions usecase
+        final failureOrTransactions = await getTransactions(event.treasuryId);
         _mapFailureOrTransactionsToState(failureOrTransactions);
       } else if (event is RefreshTransactionsByTreasuryId) {
         emit(LoadingTransactionsState());

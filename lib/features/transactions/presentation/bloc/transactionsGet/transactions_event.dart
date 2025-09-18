@@ -10,7 +10,7 @@ sealed class TransactionsEvent extends Equatable {
 class GetTransactionsByTreasuryId extends TransactionsEvent {
   final String treasuryId;
 
-  GetTransactionsByTreasuryId({required this.treasuryId});
+  const GetTransactionsByTreasuryId({required this.treasuryId});
 
   @override
   List<Object> get props => [treasuryId];
@@ -19,7 +19,7 @@ class GetTransactionsByTreasuryId extends TransactionsEvent {
 class RefreshTransactionsByTreasuryId extends TransactionsEvent {
   final String treasuryId;
 
-  RefreshTransactionsByTreasuryId({required this.treasuryId});
+  const RefreshTransactionsByTreasuryId({required this.treasuryId});
 
   @override
   List<Object> get props => [treasuryId];

@@ -17,7 +17,7 @@ final class ErrorAddEditDeleteTransactionState
     extends TransactionAddEditDeleteState {
   final String message;
 
-  ErrorAddEditDeleteTransactionState({required this.message});
+  const ErrorAddEditDeleteTransactionState({required this.message});
 
   @override
   List<Object> get props => [message];
@@ -27,7 +27,7 @@ final class MessageAddEditDeleteTransactionState
     extends TransactionAddEditDeleteState {
   final String message;
 
-  MessageAddEditDeleteTransactionState({required this.message});
+  const MessageAddEditDeleteTransactionState({required this.message});
 
   @override
   List<Object> get props => [message];

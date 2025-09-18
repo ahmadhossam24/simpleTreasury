@@ -28,7 +28,7 @@ void main() {
 
   setUp(() {
     mockRepository = MockTransactionsRepository();
-    usecase = GetAllTransactionsUsecase(mockRepository, tTransaction);
+    usecase = GetAllTransactionsUsecase(tTransaction.id, mockRepository);
   });
 
   test(
@@ -40,13 +40,11 @@ void main() {
       ).thenAnswer((_) async => Right(tTransactionsList));
 
       // act
-      final result = await usecase();
+      final result = await usecase(tTransaction.id);
 
       // assert
       expect(result, Right(tTransactionsList));
-      verify(
-        () => mockRepository.getAllTransactions(tTransaction.treasuryId),
-      ).called(1);
+      verify(() => mockRepository.getAllTransactions(any())).called(1);
       verifyNoMoreInteractions(mockRepository);
     },
   );
@@ -59,13 +57,11 @@ void main() {
     ).thenAnswer((_) async => const Left(failure));
 
     // act
-    final result = await usecase();
+    final result = await usecase(tTransaction.id);
 
     // assert
     expect(result, const Left(failure));
-    verify(
-      () => mockRepository.getAllTransactions(tTransaction.treasuryId),
-    ).called(1);
+    verify(() => mockRepository.getAllTransactions(any())).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 }

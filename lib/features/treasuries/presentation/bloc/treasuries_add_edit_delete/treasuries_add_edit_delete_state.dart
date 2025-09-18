@@ -17,7 +17,7 @@ final class ErrorAddEditDeleteTreasuryState
     extends TreasuriesAddEditDeleteState {
   final String message;
 
-  ErrorAddEditDeleteTreasuryState({required this.message});
+  const ErrorAddEditDeleteTreasuryState({required this.message});
 
   @override
   List<Object> get props => [message];
@@ -27,7 +27,7 @@ final class MessageAddEditDeleteTreasuryState
     extends TreasuriesAddEditDeleteState {
   final String message;
 
-  MessageAddEditDeleteTreasuryState({required this.message});
+  const MessageAddEditDeleteTreasuryState({required this.message});
 
   @override
   List<Object> get props => [message];

@@ -10,7 +10,7 @@ sealed class TreasuriesAddEditDeleteEvent extends Equatable {
 class AddTreasuryEvent extends TreasuriesAddEditDeleteEvent {
   final Treasury treasury;
 
-  AddTreasuryEvent({required this.treasury});
+  const AddTreasuryEvent({required this.treasury});
 
   @override
   List<Object> get props => [treasury];
@@ -19,7 +19,7 @@ class AddTreasuryEvent extends TreasuriesAddEditDeleteEvent {
 class UpdateTreasuryEvent extends TreasuriesAddEditDeleteEvent {
   final Treasury treasury;
 
-  UpdateTreasuryEvent({required this.treasury});
+  const UpdateTreasuryEvent({required this.treasury});
 
   @override
   List<Object> get props => [treasury];
@@ -28,7 +28,7 @@ class UpdateTreasuryEvent extends TreasuriesAddEditDeleteEvent {
 class DeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
   final String treasuryId;
 
-  DeleteTreasuryEvent({required this.treasuryId});
+  const DeleteTreasuryEvent({required this.treasuryId});
 
   @override
   List<Object> get props => [treasuryId];
@@ -37,7 +37,7 @@ class DeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
 class SoftDeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
   final String treasuryId;
 
-  SoftDeleteTreasuryEvent({required this.treasuryId});
+  const SoftDeleteTreasuryEvent({required this.treasuryId});
 
   @override
   List<Object> get props => [treasuryId];
@@ -46,7 +46,7 @@ class SoftDeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
 class UndoSoftDeleteTreasuryEvent extends TreasuriesAddEditDeleteEvent {
   final String treasuryId;
 
-  UndoSoftDeleteTreasuryEvent({required this.treasuryId});
+  const UndoSoftDeleteTreasuryEvent({required this.treasuryId});
 
   @override
   List<Object> get props => [treasuryId];

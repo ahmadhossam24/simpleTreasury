@@ -1,0 +1,141 @@
+1. Color Palette (Refined & Systematized)
+Your initial palette is strong. Let's assign them specific roles to prevent inconsistency.
+
+Primary Colors:
+
+Navy Blue (#1A2B4C) - Primary Brand Color
+
+Use for: Primary buttons, main app bar, active tab indicators, key headlines.
+
+Emerald Green (#2E8B57) - Positive & Success Color
+
+Use for: "Export" transactions, profit numbers, success states, confirmations.
+
+Neutral Colors:
+
+Slate Gray (#708090) - Secondary Neutral
+
+Use for: Secondary text, disabled states, borders, icons.
+
+Charcoal (#333333) - Primary Text & Surface
+
+Use for: Primary body text, headings on light backgrounds.
+
+Off-White (#F5F5F5) - Background & Canvas
+
+Use for: Main app background, card backgrounds.
+
+Semantic Colors (Accents with Purpose):
+
+Crimson Red (#DC143C) - Negative & Danger Color
+
+Use for: "Import" transactions, errors, warning alerts, debt numbers.
+
+Gold (#FFD700) - Warning & Highlight Color
+
+Use for: High-priority warnings, "Premium" tags, critical thresholds.
+
+Teal (#008080) - Informational & Interactive Color
+
+Use for: Informational links, neutral interactive elements, secondary CTA buttons.
+
+2. Typography
+We'll use a clear hierarchy based on font weight and size rather than multiple font families for simplicity and performance.
+
+Font Family: Roboto (The standard, highly readable Flutter font) or Inter (A modern, geometric sans-serif available via Google Fonts). Both are excellent for UI.
+
+Styles:
+
+Headline (Roboto/Inter Bold - 24pt)
+
+TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Charcoal)
+
+Use for: Page titles (e.g., "Treasury Overview").
+
+Subtitle (Roboto/Inter SemiBold - 18pt)
+
+TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Charcoal)
+
+Use for: Card titles, section headers.
+
+Body (Roboto/Inter Regular - 16pt)
+
+TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Charcoal)
+
+Use for: Most of your text, transaction descriptions.
+
+Caption (Roboto/Inter Regular - 14pt)
+
+TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Slate Gray)
+
+Use for: Dates, metadata, secondary information.
+
+3. Components Style
+This is where the "feel" of the app comes together. Based on your color choices (which lean professional and stable), I recommend the following:
+
+Corners: Rounded
+
+Decision: Rounded corners.
+
+Why? Rounded corners (e.g., borderRadius: 12.0) feel more modern, approachable, and safer. They guide the eye smoothly and are less "sharp" and intimidating, which is good for financial data.
+
+Style: Flat Design with Subtle Depth
+
+Decision: Flat Design, enhanced with very subtle shadows for hierarchy.
+
+Why? A purely flat design can lack hierarchy. A neumorphic design can be visually noisy for data-heavy apps. The best middle ground is a clean, flat design that uses subtle shadows to distinguish interactive elements from the background.
+
+Implementation:
+
+Cards: BoxShadow(color: Colors.black12, blurRadius: 4.0, offset: Offset(0, 2))
+
+Buttons (Primary): No shadow, just a solid Navy Blue fill.
+
+Buttons (Floating Action): A slightly stronger shadow to make it feel "lifted".
+
+Shadows: Yes, Subtly
+
+As mentioned above, use shadows sparingly to create a clear z-axis hierarchy. Background has no shadow, cards have a slight shadow, and a FAB has a more pronounced shadow.
+
+Putting It All Together: Example Components
+Here’s how these rules would manifest in your app:
+
+App Bar:
+
+Background: Navy Blue (#1A2B4C)
+
+Text: White, using Headline style.
+
+Transaction List Item:
+
+Card: White background, rounded corners (12.0), subtle shadow.
+
+Title (Subtitle): Charcoal.
+
+Amount:
+
+If Export: Emerald Green, SemiBold.
+
+If Import: Crimson Red, SemiBold.
+
+Date (Caption): Slate Gray.
+
+Primary Button:
+
+Background: Navy Blue
+
+Text: White, SemiBold.
+
+Corners: Rounded (8.0).
+
+Summary Card on Dashboard:
+
+Background: White, rounded corners (16.0), subtle shadow.
+
+"Total Balance" (Subtitle): Charcoal.
+
+Balance Figure (Headline): Navy Blue.
+
+"This Month" (Body): Slate Gray.
+
+A small indicator for "Net Growth" in Emerald Green.

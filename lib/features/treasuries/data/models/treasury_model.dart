@@ -2,10 +2,10 @@ import 'package:simpletreasury/features/treasuries/domain/entities/treasury.dart
 
 class TreasuryModel extends Treasury {
   const TreasuryModel({
-    required super.id,
-    required super.title,
-    required super.deleted,
-  });
+    String? id,
+    required String title,
+    required bool deleted,
+  }) : super(id: id, title: title, deleted: deleted);
 
   // 🧱 Construct from DB row
   factory TreasuryModel.fromMap(Map<String, dynamic> map) {

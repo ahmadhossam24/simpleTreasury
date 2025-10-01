@@ -22,7 +22,6 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
   @override
   Future<Either<Failure, Unit>> addTreasury(Treasury treasury) async {
     final TreasuryModel treasuryModel = TreasuryModel(
-      id: treasury.id,
       title: treasury.title,
       deleted: treasury.deleted,
     );
@@ -90,11 +89,11 @@ class TreasuriesRepositoryImpl implements TreasuriesRepository {
       // For each treasury, fetch its transactions in parallel
       final futures = treasuryModels.map((treasuryModel) async {
         final transactionModels = await transactionLocalDataSource
-            .getAllTransactions(treasuryModel.id);
+            .getAllTransactions(treasuryModel.id!);
 
         // calculate the balance for this treasury
         final balance = await treasuryLocalDataSource
-            .calculateBalanceOfTreasury(treasuryModel.id);
+            .calculateBalanceOfTreasury(treasuryModel.id!);
 
         // Map models (which extend entities) into the composite entity
         return TreasuryWithTransactions(

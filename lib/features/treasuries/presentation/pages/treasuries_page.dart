@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simpletreasury/core/widgets/loading_widget.dart';
 import 'package:simpletreasury/features/treasuries/presentation/bloc/treasuriesGets/treasuries_bloc.dart';
+import 'package:simpletreasury/features/treasuries/presentation/bloc/treasuries_add_edit_delete/treasuries_add_edit_delete_bloc.dart';
 import 'package:simpletreasury/features/treasuries/presentation/widgets/message_display_widget.dart';
 import 'package:simpletreasury/features/treasuries/presentation/widgets/treasuries_list_widget.dart';
 import 'package:simpletreasury/features/treasuries/presentation/widgets/treasury_add_update_widget.dart';
@@ -69,11 +70,13 @@ class TreasuriesPage extends StatelessWidget {
           // Handle treasury creation
           print('Creating treasury with title: $title');
           // Add your creation logic here
+          _validateFormThenAddTreasury(context);
         },
       ),
     );
   }
 
+  // use this when edit treasury title in treasury details page
   // void _showEditTreasuryDialog(BuildContext context, Treasury treasury) {
   //   showDialog(
   //     context: context,
@@ -88,4 +91,10 @@ class TreasuriesPage extends StatelessWidget {
   //     ),
   //   );
   // }
+
+  void _validateFormThenAddTreasury(BuildContext context) {
+    BlocProvider.of<TreasuriesAddEditDeleteBloc>(
+      context,
+    ).add(AddTreasuryEvent(treasury: treasury));
+  }
 }

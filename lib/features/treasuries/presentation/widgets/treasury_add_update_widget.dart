@@ -193,7 +193,6 @@ class _TreasuryDialogState extends State<TreasuryDialog> {
                                       widget.onConfirm(
                                         _titleController.text.trim(),
                                       );
-                                      Navigator.of(context).pop();
                                     }
                                   },
                                   borderRadius: BorderRadius.circular(8.0),

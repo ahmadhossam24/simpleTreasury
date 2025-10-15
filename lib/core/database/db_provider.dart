@@ -32,7 +32,7 @@ class DBProvider {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE transactions (
-      id TEXT PRIMARY KEY,
+      id TEXT PRIMARY KEY AUTOINCREMENT,
       treasuryId TEXT NOT NULL,
       title TEXT,
       value REAL NOT NULL,
@@ -44,7 +44,7 @@ class DBProvider {
 
     await db.execute('''
     CREATE TABLE treasuries (
-      id TEXT PRIMARY KEY,
+      id TEXT PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       deleted INTEGER NOT NULL DEFAULT 0,
       date INTEGER

@@ -40,7 +40,6 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
     try {
       final db = await _db;
       await db.insert('transactions', {
-        'id': transactionModel.id,
         'treasuryId': transactionModel.treasuryId,
         'title': transactionModel.title,
         'value': transactionModel.value,

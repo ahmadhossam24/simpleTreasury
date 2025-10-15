@@ -39,7 +39,6 @@ class TreasuryLocalDataSourceImpl implements TreasuryLocalDataSource {
     try {
       final db = await _db;
       await db.insert('treasuries', {
-        'id': treasuryModel.id,
         'title': treasuryModel.title,
         'deleted': treasuryModel.deleted ? 1 : 0,
       }, conflictAlgorithm: ConflictAlgorithm.replace);

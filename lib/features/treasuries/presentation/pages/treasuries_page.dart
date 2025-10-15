@@ -77,22 +77,6 @@ class TreasuriesPage extends StatelessWidget {
     );
   }
 
-  // use this when edit treasury title in treasury details page
-  // void _showEditTreasuryDialog(BuildContext context, Treasury treasury) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => TreasuryDialog(
-  //       treasury: treasury,
-  //       isUpdateTreasury: true,
-  //       onConfirm: (title) {
-  //         // Handle treasury update
-  //         print('Updating treasury to title: $title');
-  //         // Add your update logic here
-  //       },
-  //     ),
-  //   );
-  // }
-
   void _validateFormThenAddTreasury(BuildContext context, String title) {
     final treasury = Treasury(id: null, title: title, deleted: false);
     BlocProvider.of<TreasuriesAddEditDeleteBloc>(

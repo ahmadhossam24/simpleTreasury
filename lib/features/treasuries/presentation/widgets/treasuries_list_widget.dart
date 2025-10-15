@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simpletreasury/features/transactions/presentation/pages/treasury_transactions_page.dart';
 import 'package:simpletreasury/features/treasuries/domain/entities/treasury_with_transactions.dart';
 
 class TreasuriesListWidget extends StatelessWidget {
@@ -19,17 +20,26 @@ class TreasuriesListWidget extends StatelessWidget {
           final treasuryWithTransactions = treasuriesWithTransactions[index];
           return _TreasuryListItem(
             treasuryWithTransactions: treasuryWithTransactions,
-            onTap: () => _handleTreasuryTap(treasuryWithTransactions),
+            onTap: () => _handleTreasuryTap(context, treasuryWithTransactions),
           );
         },
       ),
     );
   }
 
-  void _handleTreasuryTap(TreasuryWithTransactions treasuryWithTransactions) {
+  void _handleTreasuryTap(
+    BuildContext context,
+    TreasuryWithTransactions treasuryWithTransactions,
+  ) {
     // Navigate to treasury details page
-    print('Tapped on treasury: ${treasuryWithTransactions.treasury.title}');
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => TreasuryDetailsPage(treasury: treasury)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TransactionsPage(
+          treasuryWithTransactions: treasuryWithTransactions,
+        ),
+      ),
+    );
   }
 }
 

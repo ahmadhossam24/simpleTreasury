@@ -100,7 +100,7 @@ void main() {
     test('deleteTreasury should delete treasury row', () async {
       await dataSource.addTreasury(treasury);
 
-      await dataSource.deleteTreasury(treasury.id);
+      await dataSource.deleteTreasury(treasury.id!);
 
       final result = await db.query('treasuries');
       expect(result, isEmpty);
@@ -109,7 +109,7 @@ void main() {
     test('softDeleteTreasury should set deleted=1', () async {
       await dataSource.addTreasury(treasury);
 
-      await dataSource.softDeleteTreasury(treasury.id);
+      await dataSource.softDeleteTreasury(treasury.id!);
 
       final result = await db.query(
         'treasuries',
@@ -121,9 +121,9 @@ void main() {
 
     test('undoSoftDeleteTreasury should set deleted=0', () async {
       await dataSource.addTreasury(treasury);
-      await dataSource.softDeleteTreasury(treasury.id);
+      await dataSource.softDeleteTreasury(treasury.id!);
 
-      await dataSource.undoSoftDeleteTreasury(treasury.id);
+      await dataSource.undoSoftDeleteTreasury(treasury.id!);
 
       final result = await db.query(
         'treasuries',
@@ -156,7 +156,7 @@ void main() {
         'deleted': 0,
       });
 
-      final balance = await dataSource.calculateBalanceOfTreasury(treasury.id);
+      final balance = await dataSource.calculateBalanceOfTreasury(treasury.id!);
 
       expect(balance, 70.0);
     });
@@ -177,7 +177,7 @@ void main() {
         });
 
         final balance = await dataSource.calculateBalanceOfTreasury(
-          treasury.id,
+          treasury.id!,
         );
 
         expect(balance, 0.0);

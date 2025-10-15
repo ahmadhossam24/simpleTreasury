@@ -6,6 +6,7 @@ import 'package:simpletreasury/features/transactions/domain/entities/transaction
 import 'package:simpletreasury/features/treasuries/domain/entities/treasury.dart';
 import 'package:simpletreasury/features/treasuries/domain/entities/treasury_with_transactions.dart';
 import 'package:simpletreasury/features/treasuries/presentation/bloc/treasuries_add_edit_delete/treasuries_add_edit_delete_bloc.dart';
+import 'package:simpletreasury/features/treasuries/presentation/pages/treasuries_page.dart';
 import 'package:simpletreasury/features/treasuries/presentation/widgets/treasury_add_update_widget.dart';
 
 class TransactionsPage extends StatelessWidget {
@@ -436,12 +437,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
                   message: state.message,
                   context: context,
                 );
-                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => TreasuriesPage()),
+                  (route) => false,
+                );
               } else if (state is ErrorAddEditDeleteTreasuryState) {
                 SnackbarMessage().showErrorSnackBar(
                   message: state.message,
                   context: context,
                 );
+                Navigator.of(context).pop();
               }
             },
             builder: (context, state) {
